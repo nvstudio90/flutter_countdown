@@ -1,0 +1,60 @@
+import 'package:flutter/material.dart';
+
+import '../count_down.dart';
+
+// Created by Ngoclv on 6/1/2020 16:14
+// Copyright © 2020 Ngoclv
+
+///define function for build custom display count down time
+typedef Builder = Widget Function(int, String);
+
+///implement simple count down widget
+class SimpleCountDown extends StatefulWidget {
+  final TextStyle textStyle;
+  final DateTimeFormatter formatter;
+  final Builder builder;
+  final CountDownController controller;
+
+  SimpleCountDown(
+      {@required this.controller,
+        this.builder,
+        this.textStyle,
+        this.formatter = simpleCountDownFormat}) : assert(controller != null);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _CountDownState();
+  }
+}
+
+class _CountDownState extends State<SimpleCountDown> {
+
+  TimeData __timeData;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.stream.listen((data){
+      __timeData = data;
+      setState(() {});
+    });
+    widget.controller.start();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.builder != null) {
+      return widget.builder(__timeData?.millisecondUtilFinish?? 0, __timeData?.formatted?? '');
+    }
+    return Text(
+      __timeData?.formatted?? '',
+      style: widget.textStyle,
+    );
+  }
+
+  @override
+  void dispose() {
+    widget.controller.close();
+    super.dispose();
+  }
+}

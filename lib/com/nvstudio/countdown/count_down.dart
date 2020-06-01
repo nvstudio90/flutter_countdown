@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 ///define function handle format time
 typedef DateTimeFormatter = String Function(int);
 
-///define function for build custom display count down time
-typedef Builder = Widget Function(int, String);
-
 ///
 ///parser millisecond to day, hour, minus, second
 ///
@@ -61,7 +58,7 @@ class CountDownController implements CountDownCallback {
   CountDownCallback _callback;
   bool _isCounting = false;
 
-  StreamController<List> _streamController = StreamController<List>.broadcast();
+  StreamController<TimeData> _streamController = StreamController<TimeData>.broadcast();
   CountDownTimer _countDownTimer;
 
   int _timeUntilFinish;
@@ -105,7 +102,7 @@ class CountDownController implements CountDownCallback {
     _countDownTimer = null;
   }
 
-  Stream<List> get stream => _streamController.stream;
+  Stream<TimeData> get stream => _streamController.stream;
 
   bool get isCounting => _isCounting;
 
@@ -124,7 +121,8 @@ class CountDownController implements CountDownCallback {
   @override
   void onTick(int millisecondUtilFinish, String formatted) {
     _timeUntilFinish = millisecondUtilFinish;
-    _streamController.add([millisecondUtilFinish, formatted]);
+    _streamController.add(TimeData(millisecondUtilFinish: millisecondUtilFinish,
+      formatted: formatted));
     _callback?.onTick(millisecondUtilFinish, formatted);
   }
 
@@ -134,59 +132,6 @@ class CountDownController implements CountDownCallback {
   void close() {
     stop();
     _streamController.close();
-  }
-}
-
-///simple implement count down widget
-class SimpleCountDown extends StatefulWidget {
-  final TextStyle textStyle;
-  final DateTimeFormatter formatter;
-  final Builder builder;
-  final CountDownController controller;
-  final bool autoStart;
-
-  SimpleCountDown(
-      {@required this.controller,
-        this.autoStart = true,
-        this.builder,
-        this.textStyle,
-        this.formatter = simpleCountDownFormat}) : assert(controller != null);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _CountDownState();
-  }
-}
-
-class _CountDownState extends State<SimpleCountDown> {
-
-  List _data = [0, ''];
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.stream.listen((data){
-      _data = data;
-      setState(() {});
-    });
-    if (widget.autoStart) widget.controller.start();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.builder != null) {
-      return widget.builder(_data[0], _data[1]);
-    }
-    return Text(
-      _data[1],
-      style: widget.textStyle,
-    );
-  }
-
-  @override
-  void dispose() {
-    if (widget.autoStart) widget.controller.close();
-    super.dispose();
   }
 }
 
@@ -298,4 +243,11 @@ abstract class CountDownCallback {
   void onTick(int millisecondUtilFinish, String formatted);
 
   void onFinish();
+}
+
+class TimeData {
+  final int millisecondUtilFinish;
+  final String formatted;
+
+  TimeData({this.millisecondUtilFinish, this.formatted});
 }
