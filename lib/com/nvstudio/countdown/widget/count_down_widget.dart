@@ -10,16 +10,21 @@ typedef Builder = Widget Function(int, String);
 
 ///implement simple count down widget
 class SimpleCountDown extends StatefulWidget {
+
   final TextStyle textStyle;
   final DateTimeFormatter formatter;
   final Builder builder;
   final CountDownController controller;
 
   SimpleCountDown(
-      {@required this.controller,
+      {
+        Key key,
+        @required this.controller,
         this.builder,
         this.textStyle,
-        this.formatter = simpleCountDownFormat}) : assert(controller != null);
+        this.formatter = simpleCountDownFormat
+      }) : assert(controller != null),
+           super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -48,7 +53,10 @@ class _CountDownState extends State<SimpleCountDown> {
     }
     return Text(
       __timeData?.formatted?? '',
-      style: widget.textStyle,
+      style: widget.textStyle?? TextStyle(
+        color: Colors.black,
+        fontSize: 16
+      ),
     );
   }
 
