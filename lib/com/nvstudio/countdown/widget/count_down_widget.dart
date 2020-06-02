@@ -43,7 +43,6 @@ class _CountDownState extends State<SimpleCountDown> {
       __timeData = data;
       setState(() {});
     });
-    widget.controller.start();
   }
 
   @override
@@ -58,11 +57,5 @@ class _CountDownState extends State<SimpleCountDown> {
         fontSize: 16
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    widget.controller.close();
-    super.dispose();
   }
 }
