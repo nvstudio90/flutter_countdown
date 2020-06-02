@@ -12,7 +12,6 @@ typedef Builder = Widget Function(int, String);
 class SimpleCountDown extends StatefulWidget {
 
   final TextStyle textStyle;
-  final DateTimeFormatter formatter;
   final Builder builder;
   final CountDownController controller;
 
@@ -22,7 +21,6 @@ class SimpleCountDown extends StatefulWidget {
         @required this.controller,
         this.builder,
         this.textStyle,
-        this.formatter = simpleCountDownFormatter
       }) : assert(controller != null),
            super(key: key);
 

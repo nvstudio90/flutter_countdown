@@ -102,6 +102,18 @@ class CountDownController implements CountDownCallback {
     _countDownTimer = null;
   }
 
+  set formatter(f) {
+    if(f != _formatter) {
+      _formatter = f;
+    }
+  }
+
+  set callback(c) {
+    if(c != _callback) {
+      _callback = c;
+    }
+  }
+
   Stream<TimeData> get stream => _streamController.stream;
 
   bool get isCounting => _isCounting;
