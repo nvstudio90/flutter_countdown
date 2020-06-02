@@ -22,7 +22,7 @@ class SimpleCountDown extends StatefulWidget {
         @required this.controller,
         this.builder,
         this.textStyle,
-        this.formatter = simpleCountDownFormat
+        this.formatter = simpleCountDownFormatter
       }) : assert(controller != null),
            super(key: key);
 

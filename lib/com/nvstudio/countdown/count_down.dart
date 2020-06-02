@@ -43,7 +43,7 @@ String simpleFormatTime(int day, int hour, int minus, int second) {
 }
 
 ///simple implement format count down time
-String simpleCountDownFormat(int timeInMillisecondUtilFinish) {
+String simpleCountDownFormatter(int timeInMillisecondUtilFinish) {
   final timeArrays = [0, 0, 0, 0];
   parser(timeInMillisecondUtilFinish, timeArrays);
   return simpleFormatTime(
@@ -75,7 +75,7 @@ class CountDownController implements CountDownCallback {
     assert(countTime != null);
     assert(stepTime != null);
     if (_formatter == null) {
-      _formatter = simpleCountDownFormat;
+      _formatter = simpleCountDownFormatter;
     }
     _timeUntilFinish = _countTime.inMilliseconds;
   }
