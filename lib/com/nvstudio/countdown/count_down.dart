@@ -180,12 +180,6 @@ class CountDownTimer implements CountDownCallback {
       onTick((microsecondToMillisecond(_durationInMicrosecond)), null);
       _timeBegin = DateTime.now();
       _handlePeriodic(_durationInMicrosecond);
-    } else {
-      if (_timer.isActive) {
-        print('count down is running...');
-      } else {
-        print('count down stopped');
-      }
     }
   }
 
