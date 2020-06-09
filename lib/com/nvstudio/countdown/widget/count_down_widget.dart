@@ -30,17 +30,14 @@ class SimpleCountDown extends StatefulWidget {
   }
 }
 
-class _CountDownState extends State<SimpleCountDown> {
+class _CountDownState extends State<SimpleCountDown> implements CountDownCallback {
 
   TimeData __timeData;
 
   @override
   void initState() {
     super.initState();
-    widget.controller.stream.listen((data){
-      __timeData = data;
-      setState(() {});
-    });
+    widget.controller.addCallback(this);
   }
 
   @override
@@ -55,5 +52,23 @@ class _CountDownState extends State<SimpleCountDown> {
         fontSize: 16
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeCallback(this);
+    super.dispose();
+  }
+
+  @override
+  void onFinish() {}
+
+  @override
+  void onStart() {}
+
+  @override
+  void onTick(int millisecondUtilFinish, String formatted) {
+    __timeData = TimeData(millisecondUtilFinish: millisecondUtilFinish, formatted: formatted);
+    setState(() {});
   }
 }

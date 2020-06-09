@@ -55,11 +55,9 @@ class CountDownController implements CountDownCallback {
   Duration _countTime;
   Duration _stepTime;
   DateTimeFormatter _formatter;
-  CountDownCallback _callback;
   bool _isCounting = false;
-
-  StreamController<TimeData> _streamController = StreamController<TimeData>.broadcast();
   CountDownTimer _countDownTimer;
+  final List<CountDownCallback> _callbacks = [];
 
   int _timeUntilFinish;
 
@@ -71,7 +69,6 @@ class CountDownController implements CountDownCallback {
     this._countTime = countTime;
     this._stepTime = stepTime;
     this._formatter = formatter;
-    this._callback = callback;
     assert(countTime != null);
     assert(stepTime != null);
     if (_formatter == null) {
@@ -85,7 +82,6 @@ class CountDownController implements CountDownCallback {
     stop();
     assert(_countTime != null);
     assert(_stepTime != null);
-    assert(_streamController.isClosed != true);
     _isCounting = true;
     _countDownTimer = CountDownTimeFormatter(
         duration: _countTime,
@@ -102,40 +98,48 @@ class CountDownController implements CountDownCallback {
     _countDownTimer = null;
   }
 
+  void addCallback(CountDownCallback callback) {
+    if(callback != null && !_callbacks.contains(callback)) {
+      _callbacks.add(callback);
+    }
+  }
+
+  void removeCallback(CountDownCallback callback) {
+    if(callback != null) {
+      _callbacks.remove(callback);
+    }
+  }
+
   set formatter(f) {
     if(f != _formatter) {
       _formatter = f;
     }
   }
 
-  set callback(c) {
-    if(c != _callback) {
-      _callback = c;
-    }
-  }
-
-  Stream<TimeData> get stream => _streamController.stream;
-
   bool get isCounting => _isCounting;
 
   @override
   void onFinish() {
-    _callback?.onFinish();
+    for(CountDownCallback callback in _callbacks) {
+      callback.onFinish();
+    }
     _isCounting = false;
   }
 
   @override
   void onStart() {
-    _callback?.onStart();
+    for(CountDownCallback callback in _callbacks) {
+      callback.onStart();
+    }
     _isCounting = true;
   }
 
   @override
   void onTick(int millisecondUtilFinish, String formatted) {
     _timeUntilFinish = millisecondUtilFinish;
-    _streamController.add(TimeData(millisecondUtilFinish: millisecondUtilFinish,
-      formatted: formatted));
-    _callback?.onTick(millisecondUtilFinish, formatted);
+    for(CountDownCallback callback in _callbacks) {
+      callback.onTick(millisecondUtilFinish, formatted);
+    }
   }
 
   ///get total time until finish
@@ -143,7 +147,7 @@ class CountDownController implements CountDownCallback {
 
   void close() {
     stop();
-    _streamController.close();
+    _callbacks.clear();
   }
 }
 
