@@ -64,8 +64,7 @@ class CountDownController implements CountDownCallback {
   CountDownController(
       {@required Duration countTime,
         @required Duration stepTime,
-        DateTimeFormatter formatter,
-        CountDownCallback callback}) {
+        DateTimeFormatter formatter}) {
     this._countTime = countTime;
     this._stepTime = stepTime;
     this._formatter = formatter;
