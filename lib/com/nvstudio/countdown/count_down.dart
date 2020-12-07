@@ -15,16 +15,11 @@ void parser(int millisUntilFinished, List<int> timeArrays) {
   assert(timeArrays != null && timeArrays.length >= 4);
   final day = (millisUntilFinished / Duration.millisecondsPerDay).floor();
   final tmpDay = day * Duration.millisecondsPerDay;
-  final hour =
-  ((millisUntilFinished - tmpDay) / Duration.millisecondsPerHour).floor();
+  final hour = ((millisUntilFinished - tmpDay) / Duration.millisecondsPerHour).floor();
   final tmpHour = hour * Duration.millisecondsPerHour;
-  final minus = ((millisUntilFinished - tmpDay - tmpHour) /
-      Duration.millisecondsPerMinute)
-      .floor();
-  final tmpMinus = (minus * Duration.millisecondsPerMinute).round();
-  final second = ((millisUntilFinished - tmpDay - tmpHour - tmpMinus) /
-      Duration.millisecondsPerSecond)
-      .round();
+  final minus = ((millisUntilFinished - tmpDay - tmpHour) / Duration.millisecondsPerMinute).floor();
+  final tmpMinus = minus * Duration.millisecondsPerMinute;
+  final second = (millisUntilFinished - tmpDay - tmpHour - tmpMinus) ~/ Duration.millisecondsPerSecond;
   timeArrays[0] = day;
   timeArrays[1] = hour;
   timeArrays[2] = minus;

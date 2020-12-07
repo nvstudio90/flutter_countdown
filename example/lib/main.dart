@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttercountdown/com/nvstudio/countdown/count_down.dart';
 
 void main() {
   runApp(MyApp());
@@ -49,17 +50,37 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage> implements CountDownCallback {
+  String _timer = '';
+  CountDownController _countDownController;
+  final _timeArrays = [0, 0, 0, 0];
+
+  _MyHomePageState() {
+    _countDownController = CountDownController(
+        countTime: Duration(minutes: 1, seconds: 5),
+        stepTime: Duration(seconds: 1),
+        formatter: (millisecondUntilFinish) {
+          parser(millisecondUntilFinish, _timeArrays);
+          return '${formatNumber(_timeArrays[2])}:${formatNumber(_timeArrays[3])}';
+        });
+    _countDownController.addCallback(this);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _countDownController.start();
+  }
 
   void _incrementCounter() {
+    _countDownController.stop();
+    _countDownController.start();
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
     });
   }
 
@@ -101,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              '$_timer',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -113,5 +134,21 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void onFinish() {
+
+  }
+
+  @override
+  void onStart() {
+
+  }
+
+  @override
+  void onTick(int millisecondUtilFinish, String formatted) {
+     _timer = formatted;
+     setState(() {});
   }
 }
