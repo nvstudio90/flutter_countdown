@@ -3,6 +3,7 @@ import 'package:fluttercountdown/com/nvstudio/countdown/count_down.dart';
 
 void main() {
   runApp(MyApp());
+  //print(4.8.floor());
 }
 
 class MyApp extends StatelessWidget {
@@ -57,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountDownCallback {
 
   _MyHomePageState() {
     _countDownController = CountDownController(
-        countTime: Duration(minutes: 1, seconds: 5),
+        countTime: Duration(minutes: 2, seconds: 0),
         stepTime: Duration(seconds: 1),
         formatter: (millisecondUntilFinish) {
           parser(millisecondUntilFinish, _timeArrays);
@@ -73,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> implements CountDownCallback {
   }
 
   void _incrementCounter() {
-    _countDownController.stop();
     _countDownController.start();
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -148,7 +148,8 @@ class _MyHomePageState extends State<MyHomePage> implements CountDownCallback {
 
   @override
   void onTick(int millisecondUtilFinish, String formatted) {
-     _timer = formatted;
-     setState(() {});
+     setState(() {
+       _timer = formatted;
+     });
   }
 }

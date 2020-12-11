@@ -13,13 +13,14 @@ typedef DateTimeFormatter = String Function(int);
 ///
 void parser(int millisUntilFinished, List<int> timeArrays) {
   assert(timeArrays != null && timeArrays.length >= 4);
-  final day = (millisUntilFinished / Duration.millisecondsPerDay).floor();
-  final tmpDay = day * Duration.millisecondsPerDay;
-  final hour = ((millisUntilFinished - tmpDay) / Duration.millisecondsPerHour).floor();
-  final tmpHour = hour * Duration.millisecondsPerHour;
-  final minus = ((millisUntilFinished - tmpDay - tmpHour) / Duration.millisecondsPerMinute).floor();
-  final tmpMinus = minus * Duration.millisecondsPerMinute;
-  final second = (millisUntilFinished - tmpDay - tmpHour - tmpMinus) ~/ Duration.millisecondsPerSecond;
+  var tmp = millisUntilFinished;
+  final day = (tmp / Duration.millisecondsPerDay).floor();
+  tmp = tmp - day* Duration.millisecondsPerDay;
+  final hour = (tmp / Duration.millisecondsPerHour).floor();
+  tmp = tmp - hour * Duration.millisecondsPerHour;
+  final minus = (tmp / Duration.millisecondsPerMinute).floor();
+  tmp = tmp - minus * Duration.millisecondsPerMinute;
+  final second = (tmp / Duration.millisecondsPerSecond).floor();
   timeArrays[0] = day;
   timeArrays[1] = hour;
   timeArrays[2] = minus;
@@ -181,13 +182,12 @@ class CountDownTimer implements CountDownCallback {
         _intervalInMicrosecond = interval.inMicroseconds,
         _callback = callback;
 
-  int microsecondToMillisecond(int micro) => (micro / 1000).round();
+  int microsecondToMillisecond(int micro) => micro ~/ 1000;
 
   ///start count down
   void start() {
     if (_timer == null) {
       onStart();
-      onTick((microsecondToMillisecond(_durationInMicrosecond)), null);
       _timeBegin = DateTime.now();
       _handlePeriodic(_durationInMicrosecond);
     }
@@ -196,10 +196,9 @@ class CountDownTimer implements CountDownCallback {
   void _handlePeriodic(int duration) {
     final int delay =
     duration <= _intervalInMicrosecond ? duration : _intervalInMicrosecond;
+    onTick(microsecondToMillisecond(_leftTime), null);
     _timer = Timer.periodic(Duration(microseconds: delay), (t) {
-      int consumeInMicrosecond =
-          DateTime.now().difference(_timeBegin).inMicroseconds;
-      int left = _durationInMicrosecond - consumeInMicrosecond;
+      int left = _leftTime;
       if (left <= 0) {
         cancel();
         onTick(0, null);
@@ -212,6 +211,12 @@ class CountDownTimer implements CountDownCallback {
         }
       }
     });
+  }
+
+  int get _leftTime {
+    int consumeInMicrosecond = DateTime.now().difference(_timeBegin).inMicroseconds;
+    int left = _durationInMicrosecond - consumeInMicrosecond;
+    return left < 0 ? 0: left;
   }
 
   ///cancel count down if it running
