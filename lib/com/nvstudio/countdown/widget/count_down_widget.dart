@@ -11,18 +11,17 @@ typedef Builder = Widget Function(int, String);
 ///implement simple count down widget
 class SimpleCountDown extends StatefulWidget {
 
-  final TextStyle textStyle;
-  final Builder builder;
+  final TextStyle? textStyle;
+  final Builder? builder;
   final CountDownController controller;
 
   SimpleCountDown(
       {
-        Key key,
-        @required this.controller,
+        Key? key,
+        required this.controller,
         this.builder,
         this.textStyle,
-      }) : assert(controller != null),
-           super(key: key);
+      }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,7 +31,7 @@ class SimpleCountDown extends StatefulWidget {
 
 class _CountDownState extends State<SimpleCountDown> implements CountDownCallback {
 
-  TimeData __timeData;
+  TimeData? __timeData;
 
   @override
   void initState() {
@@ -43,7 +42,7 @@ class _CountDownState extends State<SimpleCountDown> implements CountDownCallbac
   @override
   Widget build(BuildContext context) {
     if (widget.builder != null) {
-      return widget.builder(__timeData?.millisecondUtilFinish?? 0, __timeData?.formatted?? '');
+      return widget.builder!(__timeData?.millisecondUtilFinish?? 0, __timeData?.formatted?? '');
     }
     return Text(
       __timeData?.formatted?? '',
@@ -67,7 +66,7 @@ class _CountDownState extends State<SimpleCountDown> implements CountDownCallbac
   void onStart() {}
 
   @override
-  void onTick(int millisecondUtilFinish, String formatted) {
+  void onTick(int millisecondUtilFinish, String? formatted) {
     __timeData = TimeData(millisecondUtilFinish: millisecondUtilFinish, formatted: formatted);
     setState(() {});
   }

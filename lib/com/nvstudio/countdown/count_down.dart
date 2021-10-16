@@ -2,8 +2,6 @@
 // Copyright © 2020 Ngoclv
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 ///define function handle format time
 typedef DateTimeFormatter = String Function(int);
@@ -12,10 +10,9 @@ typedef DateTimeFormatter = String Function(int);
 ///parser millisecond to day, hour, minus, second
 ///
 void parser(int millisUntilFinished, List<int> timeArrays) {
-  assert(timeArrays != null && timeArrays.length >= 4);
   var tmp = millisUntilFinished;
   final day = (tmp / Duration.millisecondsPerDay).floor();
-  tmp = tmp - day* Duration.millisecondsPerDay;
+  tmp = tmp - day * Duration.millisecondsPerDay;
   final hour = (tmp / Duration.millisecondsPerHour).floor();
   tmp = tmp - hour * Duration.millisecondsPerHour;
   final minus = (tmp / Duration.millisecondsPerMinute).floor();
@@ -48,24 +45,22 @@ String simpleCountDownFormatter(int timeInMillisecondUtilFinish) {
 
 ///manage stream for count down
 class CountDownController implements CountDownCallback {
-  Duration _countTime;
-  Duration _stepTime;
-  DateTimeFormatter _formatter;
+  late Duration _countTime;
+  late Duration _stepTime;
+  DateTimeFormatter? _formatter;
   bool _isCounting = false;
-  CountDownTimer _countDownTimer;
+  CountDownTimer? _countDownTimer;
   final List<CountDownCallback> _callbacks = [];
 
-  int _timeUntilFinish;
+  late int _timeUntilFinish;
 
   CountDownController(
-      {@required Duration countTime,
-        @required Duration stepTime,
-        DateTimeFormatter formatter}) {
+      {required Duration countTime,
+      required Duration stepTime,
+      DateTimeFormatter? formatter}) {
     this._countTime = countTime;
     this._stepTime = stepTime;
     this._formatter = formatter;
-    assert(countTime != null);
-    assert(stepTime != null);
     if (_formatter == null) {
       _formatter = simpleCountDownFormatter;
     }
@@ -75,8 +70,6 @@ class CountDownController implements CountDownCallback {
   ///start count down
   void start() {
     stop();
-    assert(_countTime != null);
-    assert(_stepTime != null);
     _isCounting = true;
     _countDownTimer = CountDownTimeFormatter(
         duration: _countTime,
@@ -94,19 +87,17 @@ class CountDownController implements CountDownCallback {
   }
 
   void addCallback(CountDownCallback callback) {
-    if(callback != null && !_callbacks.contains(callback)) {
+    if (!_callbacks.contains(callback)) {
       _callbacks.add(callback);
     }
   }
 
   void removeCallback(CountDownCallback callback) {
-    if(callback != null) {
-      _callbacks.remove(callback);
-    }
+    _callbacks.remove(callback);
   }
 
   set formatter(f) {
-    if(f != _formatter) {
+    if (f != _formatter) {
       _formatter = f;
     }
   }
@@ -115,7 +106,7 @@ class CountDownController implements CountDownCallback {
 
   @override
   void onFinish() {
-    for(CountDownCallback callback in _callbacks) {
+    for (CountDownCallback callback in _callbacks) {
       callback.onFinish();
     }
     _isCounting = false;
@@ -123,16 +114,16 @@ class CountDownController implements CountDownCallback {
 
   @override
   void onStart() {
-    for(CountDownCallback callback in _callbacks) {
+    for (CountDownCallback callback in _callbacks) {
       callback.onStart();
     }
     _isCounting = true;
   }
 
   @override
-  void onTick(int millisecondUtilFinish, String formatted) {
+  void onTick(int millisecondUtilFinish, String? formatted) {
     _timeUntilFinish = millisecondUtilFinish;
-    for(CountDownCallback callback in _callbacks) {
+    for (CountDownCallback callback in _callbacks) {
       callback.onTick(millisecondUtilFinish, formatted);
     }
   }
@@ -148,36 +139,35 @@ class CountDownController implements CountDownCallback {
 
 ///impl count down support format time
 class CountDownTimeFormatter extends CountDownTimer {
-  DateTimeFormatter _formatter;
+  DateTimeFormatter? _formatter;
 
   CountDownTimeFormatter(
-      {@required Duration duration,
-        @required Duration interval,
-        DateTimeFormatter formatter,
-        CountDownCallback callback})
+      {required Duration duration,
+       required Duration interval,
+      DateTimeFormatter? formatter,
+      CountDownCallback? callback})
       : _formatter = formatter,
         super(duration: duration, interval: interval, callback: callback);
 
   @override
-  void onTick(int millisecondUtilFinish, String formatted) {
-    String dateTimeInFormat =
-    _formatter != null ? _formatter(millisecondUtilFinish) : null;
+  void onTick(int millisecondUtilFinish, String? formatted) {
+    String? dateTimeInFormat = _formatter?.call(millisecondUtilFinish);
     _callback?.onTick(millisecondUtilFinish, dateTimeInFormat);
   }
 }
 
 class CountDownTimer implements CountDownCallback {
-  final int _durationInMicrosecond;
-  final int _intervalInMicrosecond;
-  final CountDownCallback _callback;
+  late final int _durationInMicrosecond;
+  late final int _intervalInMicrosecond;
+  final CountDownCallback? _callback;
 
-  Timer _timer;
-  DateTime _timeBegin;
+  Timer? _timer;
+  DateTime? _timeBegin;
 
   CountDownTimer(
-      {@required Duration duration,
-        @required Duration interval,
-        CountDownCallback callback})
+      {required Duration duration,
+      required Duration interval,
+      CountDownCallback? callback})
       : _durationInMicrosecond = duration.inMicroseconds,
         _intervalInMicrosecond = interval.inMicroseconds,
         _callback = callback;
@@ -195,7 +185,7 @@ class CountDownTimer implements CountDownCallback {
 
   void _handlePeriodic(int duration) {
     final int delay =
-    duration <= _intervalInMicrosecond ? duration : _intervalInMicrosecond;
+        duration <= _intervalInMicrosecond ? duration : _intervalInMicrosecond;
     onTick(microsecondToMillisecond(_leftTime), null);
     _timer = Timer.periodic(Duration(microseconds: delay), (t) {
       int left = _leftTime;
@@ -214,22 +204,23 @@ class CountDownTimer implements CountDownCallback {
   }
 
   int get _leftTime {
-    int consumeInMicrosecond = DateTime.now().difference(_timeBegin).inMicroseconds;
+    int consumeInMicrosecond =
+        DateTime.now().difference(_timeBegin!).inMicroseconds;
     int left = _durationInMicrosecond - consumeInMicrosecond;
-    return left < 0 ? 0: left;
+    return left < 0 ? 0 : left;
   }
 
   ///cancel count down if it running
   void cancel() {
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
       _timer = null;
     }
   }
 
   ///call
   @override
-  void onTick(int millisecondUtilFinish, String formatted) {
+  void onTick(int millisecondUtilFinish, String? formatted) {
     _callback?.onTick(millisecondUtilFinish, null);
   }
 
@@ -249,14 +240,14 @@ abstract class CountDownCallback {
 
   void onStart();
 
-  void onTick(int millisecondUtilFinish, String formatted);
+  void onTick(int millisecondUtilFinish, String? formatted);
 
   void onFinish();
 }
 
 class TimeData {
   final int millisecondUtilFinish;
-  final String formatted;
+  final String? formatted;
 
-  TimeData({this.millisecondUtilFinish, this.formatted});
+  TimeData({required this.millisecondUtilFinish, this.formatted});
 }
