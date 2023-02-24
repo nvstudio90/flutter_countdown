@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttercountdown/com/nvstudio/countdown/count_down.dart';
+import 'package:flutter_countdown/com/nvstudio/countdown/count_down.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +34,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -44,8 +47,6 @@ class MyHomePage extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-
-  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();

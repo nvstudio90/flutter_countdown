@@ -1,11 +1,10 @@
-name: fluttercountdown
+name: flutter_countdown
 description: A new Flutter package.
 version: 0.0.1
-author:
-homepage:
+homepage: non
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:
